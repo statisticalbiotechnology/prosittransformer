@@ -274,3 +274,13 @@ TSWLatexianTemp*
 
 # Makeindex log files
 *.lpz
+
+**/__pycache__
+**/.ipynb_checkpoints
+torchToTF_tape.egg-info
+**/*.pkl
+**/*.txt
+Convert-Copy1.ipynb
+tf_model/
+tape.onnx
+result/
