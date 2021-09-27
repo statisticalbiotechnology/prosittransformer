@@ -12,7 +12,7 @@ setup(
         'onnx-tf==1.8.0',
         'scikit-learn',
         'scipy',
-        'tape_proteins @ https://github.com/markusEkvall93/tape/tarball/master'
+        'tape_proteins @ https://github.com/statisticalbiotechnology/tape/tarball/master'
     ],
     entry_points='''
     [console_scripts]
