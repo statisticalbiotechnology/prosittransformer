@@ -9,6 +9,7 @@ from pathlib import Path
 from PrositTransformer.constants import splits
 from PrositTransformer.fileConverters.Tape2Prosit import Tape2Prosit
 import tempfile
+from PrositTransformer.utils import PathHandler
 
 @click.command()
 @click.option('--model', type=click.Path(), help="Path to tape torch model.")
@@ -20,8 +21,12 @@ import tempfile
 @click.option('--batch_size', default=64, help="Batch size during eval")
 def cli(model: Path, lmdb: Path, out_dir: Path, split: str, prosit_hdf5_path:Path, out_file:str, batch_size:int):
     """Make prediction with tape Torch model and save result into prosit-hdf5"""
-
+    assert PathHandler.isDir(model), f"{model} don't exist!"
+    assert PathHandler.isDir(lmdb), f"{lmdb} don't exist!"
+    assert PathHandler.isDir(out_dir), f"{out_dir} don't exist!"
+    assert PathHandler.isFile(prosit_hdf5_path), f"{prosit_hdf5_path} don't exist!"
     assert split in splits, f"{split} not valid. Needs to be any of {splits}"
+
     pytorch_model = ProteinBertForValuePredictionFragmentationProsit.from_pretrained(model)
     if torch.cuda.is_available():
         use_gpu = True

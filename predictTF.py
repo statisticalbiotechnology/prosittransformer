@@ -10,6 +10,7 @@ from pathlib import Path
 from PrositTransformer.constants import splits
 from PrositTransformer.fileConverters.Tape2Prosit import Tape2Prosit
 import tempfile 
+from PrositTransformer.utils import PathHandler
 
 @click.command()
 @click.option('--model', type=click.Path(), help="Path to tape torch model.")
@@ -21,7 +22,10 @@ import tempfile
 @click.option('--batch_size', default=1028, help="Batch size during eval")
 def cli(model: Path, lmdb: Path, out_dir: Path, split: str, batch_size: int, prosit_hdf5_path: Path, out_file : str):
     """Predict with Tape TF model and save result into prosit-hdf5"""
-
+    assert PathHandler.isDir(model), f"{model} don't exist!"
+    assert PathHandler.isDir(lmdb), f"{lmdb} don't exist!"
+    assert PathHandler.isDir(out_dir), f"{out_dir} don't exist!"
+    assert PathHandler.isFile(prosit_hdf5_path), f"{prosit_hdf5_path} don't exist!"
     assert split in splits, f"{split} not valid. Needs to be any of {splits}"
     if not model.endswith("/"):
         model += "/"
