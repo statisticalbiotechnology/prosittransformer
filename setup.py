@@ -6,6 +6,7 @@ setup(
     py_modules=['convert'],
     install_requires=[
         'Click',
+        'tensorflow-gpu==2.3.0',
         'torch==1.8.1',
         'tqdm==4.62.3',
         'onnx==1.9.0',
