@@ -4,13 +4,13 @@ from tape.datasets import PrositFragmentationDataset
 import tensorflow as tf
 import numpy as np
 import torch
-from PrositTransformer.DataHandler import getTFDataLoader
+from prosittransformer.DataHandler import getTFDataLoader
 from tqdm import tqdm
 from pathlib import Path
-from PrositTransformer.constants import splits
-from PrositTransformer.fileConverters.Tape2Prosit import Tape2Prosit
+from prosittransformer.constants import splits
+from prosittransformer.fileConverters.Tape2Prosit import Tape2Prosit
 import tempfile 
-from PrositTransformer.utils import PathHandler
+from prosittransformer.utils import PathHandler
 
 @click.command()
 @click.option('--model', type=click.Path(), help="Path to tape torch model.")

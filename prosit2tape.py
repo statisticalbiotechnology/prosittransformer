@@ -1,9 +1,9 @@
 import click
-from PrositTransformer.fileConverters.Prosit2Tape import Prosit2Tape
-from PrositTransformer.constants import splits
+from prosittransformer.fileConverters.Prosit2Tape import Prosit2Tape
+from prosittransformer.constants import splits
 from pathlib import Path
-from PrositTransformer.constants import splits
-from PrositTransformer.utils import PathHandler
+from prosittransformer.constants import splits
+from prosittransformer.utils import PathHandler
 
 @click.command()
 @click.option('--prosit_hdf5_path', type=click.Path(), help="Path to prosit hdf5 path.")

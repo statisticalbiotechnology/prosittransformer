@@ -22,5 +22,6 @@ setup(
     predictTF=predictTF:cli
     validate=validate:cli
     prosit2tape=prosit2tape:cli
+    ceCalibration=ceCalibration:cli
     '''
 )

@@ -1,8 +1,8 @@
 import click
-from PrositTransformer.modelConverters import torch2tf
+from prosittransformer.modelConverters import torch2tf
 from pathlib import Path
-from PrositTransformer.constants import splits
-from PrositTransformer.utils import PathHandler
+from prosittransformer.constants import splits
+from prosittransformer.utils import PathHandler
 
 @click.command()
 @click.option('--torch_model', type=click.Path(), help="Path to tape torch model.")

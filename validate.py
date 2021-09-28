@@ -1,10 +1,10 @@
 import click
-from PrositTransformer.fileConverters import Tape2Prosit
+from prosittransformer.fileConverters import Tape2Prosit
 from tqdm import tqdm
-from PrositTransformer.validation import checkAllClose, CompareSA
-from PrositTransformer.utils import hdf5Loader
+from prosittransformer.validation import checkAllClose, CompareSA
+from prosittransformer.utils import hdf5Loader
 from pathlib import Path
-from PrositTransformer.utils import PathHandler
+from prosittransformer.utils import PathHandler
 
 @click.command()
 @click.option('--tf_hdf5', type=click.Path(), help="Path to tf result.")

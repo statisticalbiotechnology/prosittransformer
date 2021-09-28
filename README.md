@@ -49,7 +49,7 @@ prosit@transformer:~$ tape-train \
   --model_config_file /path/to/config/file.json
 ```
 
-We have an example config file at config/prositTransformer.json
+We have an example config file at config/prosittransformer.json
 # Model conversion
 
 In order to convert the Torch model to TensorFlow use:
@@ -111,4 +111,12 @@ prosit@transformer:~$ cd Rscript report.R \
 --val_file /path/to/predict_result/tfResult.hdf5 \
 --ho_file /path/to/prosit/file_test.hdf5 \
 --out_dir /path/to/report
+```
+
+# Generate CE Calibration plot
+```console
+prosit@transformer:~$ ceCalibration \
+--torch_model /path/to/model \
+--lmdb /path/to/LMDB \
+--out_dir /path/to/output
 ```
