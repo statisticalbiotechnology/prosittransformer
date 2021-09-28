@@ -11,7 +11,7 @@ https://figshare.com/account/home#/projects/123637
 
 You can also convert Prosit HDF5-files to TAPE LMDB data by using this command:
 
-```
+
 Then convert files to LMDB
 ```console
 prosit@transformer:~$ prosit2tape \
