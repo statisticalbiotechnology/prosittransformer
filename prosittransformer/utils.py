@@ -241,10 +241,12 @@ class cleanTapeOutput:
         spectral_distance = 2 * arccos / np.pi
         return spectral_distance
     
-    def getIntensitiesAndSpectralAngle(self, prediction: np.array, target: np.array, charge: np.array, sequence: np.array)->Tuple[np.array, np.array]:
+    def getIntensitiesAndSpectralAngle(self, prediction: np.array, target: np.array, charge: np.array, sequence: np.array, start_stop_token=False)->Tuple[np.array, np.array]:
         """Clean intensities and compute spectral angle"""
         sequence_lengths = [np.count_nonzero(s) for s in sequence]
-
+        if start_stop_token:
+            sequence_lengths = [s - 2 for s in sequence_lengths]
+        
         intensities = np.asarray(prediction)
         intensities_raw = np.asarray(target)
         charge = np.array(charge)

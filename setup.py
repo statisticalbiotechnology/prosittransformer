@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup(
-    name="torchToTF_tape",
+    name="prosittransformer",
     version="1.0",
-    py_modules=['convert'],
+    packages= (),
     install_requires=[
         'Click',
         'tensorflow-gpu==2.3.0',
