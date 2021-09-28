@@ -4,12 +4,13 @@ prosit@transformer:~$ pip install -e .
 ```
 Everything that is required will be install except for Nvidia Apex. Install it here: https://github.com/NVIDIA/apex\
 However, only training requires Nvidia Apex
-# Data
-You can get the data in two ways.
-### Prosit HDF5 to Tape LMDB
-Download HDF5-files
-```console
-prosit@transformer:~$ bash downloadProsithdf5.sh
+# Downloads: Data & Models
+### Tape training data
+You can download the TAPE LMDB training data here:
+https://figshare.com/account/home#/projects/123637
+
+You can also convert Prosit HDF5-files to TAPE LMDB data by using this command:
+
 ```
 Then convert files to LMDB
 ```console
@@ -18,9 +19,16 @@ prosit@transformer:~$ prosit2tape \
 --out_dir /path/to/data \
 --split test
 ```
-The conversion takes a long time (~20h for training data)
-### Download LMDB data
-#TODO: Fix a download file for LMDB-data
+
+### Prosit HDF5 files
+You will need at least the Hold out file for benchmarking Prosit Transformer model. You can download it here:
+https://figshare.com/articles/dataset/ProteomeTools_non_tryptic_-\_Prosit_fragmentation_-_Data/12937092
+
+It's the hcd files that's being used.
+
+### Models
+You can download the torch and tensorflow version of the prosit transformer here:
+https://figshare.com/account/home#/projects/123637
 
 # Training
 ```console
@@ -43,7 +51,6 @@ prosit@transformer:~$ tape-train \
 
 We have an example config file at config/prositTransformer.json
 # Model conversion
-#TODO: make it possible to download models
 
 In order to convert the Torch model to TensorFlow use:
 ```console
@@ -89,7 +96,6 @@ prosit@transformer:~$ validate \
 --torch_hdf5 /path/to/predict_result/torchResult.hdf5
 ```
 # Generate Prosit report
-#TODO: Make it possible to download our final prediction file
 
 To get a Prosit report you need to make a predicton with any of the functions mentioned above to get result.hdf5 file. You also need prosit hdf5-file which you can get by running 
 
