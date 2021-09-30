@@ -31,7 +31,7 @@ You can download the torch and tensorflow version of the prosit transformer here
 https://figshare.com/account/home#/projects/123637
 
 # Training
-## Warning: It's highly recommended to create new environment and install tape at https://github.com/statisticalbiotechnology/tape and install Nvidia-apex. There will most likely be compatibility issues with Nvidia-apex and torch running "tape-train" in the same environement as prosittransformer.
+## Warning: It's highly recommended to create a new environment and install tape at https://github.com/statisticalbiotechnology/tape and install Nvidia-apex. There will most likely be compatibility issues with Nvidia-apex and torch running "tape-train" in the same environment as prosittransformer.
 ```console
 prosit@transformer:~$ tape-train \
     transformer \
