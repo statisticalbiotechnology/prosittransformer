@@ -25,6 +25,9 @@
 
 \usepackage{dsfont}
 
+\usepackage{graphicx}
+
+
 
 %% END MACROS SECTION
 
@@ -94,6 +97,7 @@ We set out to use the setup previously used for training and testing the Prosit 
 
 
 \begin{figure}[htb]
+\includegraphics[width=8cm]{./figures/Architecture.png}
 \caption{Architecture of the Prosit Transformer. The model is dependant on a pre-trained encoder from the TAPE project and uses the design of TAPE for a Prosit Specific decoder. However, our model implements many of the design features of Prosit RNN, i.e., layers handling meta-data and final intensity prediction.}
 \end{figure}
 
@@ -106,6 +110,7 @@ To obtain better accuracy in predicting present and absent peaks, we introduced 
 
 
 \begin{figure}[htb]
+\includegraphics[width=8cm]{./figures/compare_delta.png}
 \caption{
 Adjust training to predict absence/presence of individual MS2 peaks. To obtain better prediction accuracy of present and absent MS2 peaks, we adjusted the intensities of absent peaks from zero to $\delta$. We measured the false discovery rate (FDR) and the false-negative rate (FNR) of each spectrum and then plotted the average angular similarity, the FDR, and the FNR for different choices of $\delta$. We selected $\delta=0.34$ for the final training.  The values should be compared to the ones of the Prosit RNN, which had an FDR of X and an FNR of Y. The predicted spectra were not post-processed for the measurements in this figure (See Methods).}
 \end{figure}
@@ -122,6 +127,19 @@ To test the performance of our final Prosit Transformer, we investigated its per
 
 
 \begin{figure}[htb]
+\includegraphics[width=8cm]{./figures/spectralAngleDist.png}
+Figure 3: The prediction accuracy of the predictors. (A) We made separate histograms and smoothed them with a kernel density estimator to observe the distribution of angular similarity for the spectra predicted with Prosit Transformer and Prosit RNN. (B) The same angular similarity was also stratified by the length of peptides (C) We also measured the false discovery rate, i.e. the fraction of observed absent peaks among the predicted non-zero intensity peaks, for each spectrum, and (D) the false-negative rate, i.e. the fraction of predicted absent peaks among the observed non-zero intensity peaks.
+\end{figure}
+\begin{figure}[htb]
+\includegraphics[width=8cm]{./figures/violin_sa_pepLen.png}
+Figure 3: The prediction accuracy of the predictors. (A) We made separate histograms and smoothed them with a kernel density estimator to observe the distribution of angular similarity for the spectra predicted with Prosit Transformer and Prosit RNN. (B) The same angular similarity was also stratified by the length of peptides (C) We also measured the false discovery rate, i.e. the fraction of observed absent peaks among the predicted non-zero intensity peaks, for each spectrum, and (D) the false-negative rate, i.e. the fraction of predicted absent peaks among the observed non-zero intensity peaks.
+\end{figure}
+\begin{figure}[htb]
+\includegraphics[width=8cm]{./figures/FDR.png}
+Figure 3: The prediction accuracy of the predictors. (A) We made separate histograms and smoothed them with a kernel density estimator to observe the distribution of angular similarity for the spectra predicted with Prosit Transformer and Prosit RNN. (B) The same angular similarity was also stratified by the length of peptides (C) We also measured the false discovery rate, i.e. the fraction of observed absent peaks among the predicted non-zero intensity peaks, for each spectrum, and (D) the false-negative rate, i.e. the fraction of predicted absent peaks among the observed non-zero intensity peaks.
+\end{figure}
+\begin{figure}[htb]
+\includegraphics[width=8cm]{./figures/FNR.png}
 Figure 3: The prediction accuracy of the predictors. (A) We made separate histograms and smoothed them with a kernel density estimator to observe the distribution of angular similarity for the spectra predicted with Prosit Transformer and Prosit RNN. (B) The same angular similarity was also stratified by the length of peptides (C) We also measured the false discovery rate, i.e. the fraction of observed absent peaks among the predicted non-zero intensity peaks, for each spectrum, and (D) the false-negative rate, i.e. the fraction of predicted absent peaks among the observed non-zero intensity peaks.
 \end{figure}
 
@@ -133,6 +151,7 @@ We also wanted to test that the improved ability of Prosit Transformer to predic
 
 
 \begin{figure}
+\includegraphics[width=8cm]{./figures/CeCalibration.png}
 Figure 4: The mean spectral angle as a function of the collision energy (CE) for spectra acquired with different CEs. 
 \end{figure}
  
