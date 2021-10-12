@@ -32,14 +32,14 @@
 %% END MACROS SECTION
 
 \title{Prosit Transformer: A transformer for prediction of MS2 spectrum intensities}
-\author{Markus Ekvall \and Wassim Gabriel \and Mathias Wilhelm \and Lukas Käll}
+\author{Markus Ekvall$^1$ \and Wassim Gabriel$^2$ \and Mathias Wilhelm$^2$ \and Lukas K\"{a}ll$^1$}
 
 
 \begin{document}
 %\linenumbers
 \maketitle
-1. Science for Life Laboratory, School of Engineering Sciences in Chemistry, Biotechnology and Health, Royal Institute of Technology − KTH, Box 1031, 17121 Solna, Sweden
-2.Computational Mass Spectrometry, Technical University of Munich (TUM), Freising, Germany
+$^1$ Science for Life Laboratory, School of Engineering Sciences in Chemistry, Biotechnology and Health, Royal Institute of Technology − KTH, Box 1031, 17121 Solna, Sweden\\
+$^2$ Computational Mass Spectrometry, Technical University of Munich (TUM), Freising, Germany
 
 \begin{abstract}
 Machine learning has been an integral part of the interpretation of data from mass spectrometry-based proteomics for a long time. Relatively recently, a machine-learning structure appeared that has been successful in other areas of bioinformatics, Transformers. They have been proven particularly useful for transfer learning, i.e., adapting networks trained for other tasks to new functionality with fewer training examples than it otherwise would require. 
@@ -55,15 +55,15 @@ We believe that transformers will significantly increase prediction accuracy for
 \section*{Introduction}
 Just as in many other areas involving analysis of large and complex datasets, modern analysis of mass spectrometry-based proteomics data is tremendously helped by different types of machine learning \cite{Meyer2021-hc,Mann2021-kx}. For example, we nowadays can use machine learning to predict tryptic digestion \cite{Yang2021-ng}, chromatographic retention time \cite{Moruz2010-ls,Ma2018-wy,Martens_undated-vs}, collisional cross-section \cite{Meier2021-ur}, the accuracy of peptide-spectrum matches \cite{Kall2007-ll}, the accuracy of transitions in DIA data \cite{Demichev2020-zd}, and de Novo Interpretation of spectra \cite{Tran2017-lk} are tasks that utilize machine learning.
 
-One task that has gained traction in the last couple of years is predicting MS2 spectra from peptide sequences \cite{Degroeve2015-fh,Gessulat2019-el}. Such predictors can predict relative intensities of the b- and y-ions of a given peptide sequence. Together with the m/z values of the ions, which one can derive from first principle, one can subsequently form a full MS2 spectrum. MS2 spectrum prediction has in a short time established itself as a means to rescore peptide spectrum matches \cite{C_Silva2019-ja}, increase the sensitivity in large search spaces \cite{Wilhelm2021-mz}, and target-decoy strategies for DIA interpretation \cite{Searle2020-yk}.  
+One task that has gained traction in the last couple of years is predicting MS2 spectra from peptide sequences \cite{Degroeve2015-fh,Gessulat2019-el}. Such predictors can predict relative intensities of the $b$- and $y$-ions of a given peptide sequence. Together with the m/z values of the ions, which one can derive from first principle, one can subsequently form a full MS2 spectrum. MS2 spectrum prediction has in a short time established itself as a means to rescore peptide spectrum matches \cite{C_Silva2019-ja}, increase the sensitivity in large search spaces \cite{Wilhelm2021-mz}, and target-decoy strategies for DIA interpretation \cite{Searle2020-yk}.  
  
-Many types of frameworks are available for training a predictor, such as Support Vector Machines and Recurrent Neural Networks (RNNs) used within mass spectrometry-based proteomics. However, in the last couple of years, a structure first in natural language processing \cite{noauthor_undated-sz} known as Transformers \cite{Vaswani2017-sy}, has successfully been employed within other areas of bioinformatics, e.g., structure prediction \cite{Rao2019-qq,Bepler2021-ci}.
+Many types of frameworks are available for training a predictor, such as Support Vector Machines and Recurrent Neural Networks (RNNs) used within mass spectrometry-based proteomics. However, in the last couple of years, a structure first in natural language processing \cite{devlin2018bert} known as Transformers \cite{Vaswani2017-sy}, has successfully been employed within other areas of bioinformatics, e.g., structure prediction \cite{Rao2019-qq,Bepler2021-ci}.
 
-Transformers are, like RNNs, designed to handle sequential input data and do so through attention mechanisms, i.e., mechanisms that enhance the essential parts of the input sequence for its output. However, unlike RNNs, the Transformers do not use recurrence, thus enabling a significant speed-up by parallelizing their training. Transformers are based on an encoder-decoder structure, where both the encoder and decoder adopt the multi-headed attention mechanism[Attention is all you need]. However, we use the Bidirectional Encoder Representations from Transformers(BERT) transformer architecture that only uses the transformer's encoder part. One train BERT by predicting a masked word-token in the input given the rest of the word-token in the input, which the encoder provides; hence BERT requires no decoder[BERT].
+Transformers are, like RNNs, designed to handle sequential input data and do so through attention mechanisms, i.e., mechanisms that enhance the essential parts of the input sequence for its output. However, unlike RNNs, the Transformers do not use recurrence, thus enabling a significant speed-up by parallelizing their training. Transformers are based on an encoder-decoder structure, where both the encoder and decoder adopt the multi-headed attention mechanism\cite{Vaswani2017-sy}. However, we use the Bidirectional Encoder Representations from Transformers(BERT) transformer architecture that only uses the transformer's encoder part. One train BERT by predicting a masked word-token in the input given the rest of the word-token in the input, which the encoder provides; hence BERT requires no decoder[BERT].
 
 Particularly, the Tasks Assessing Protein Embeddings (TAPE) model \cite{Rao2019-qq} is exciting; an autoencoder of protein sequences is formed by withholding one amino acid at a time in a large set of protein sequences and subsequently predicting which is the missing amino acid. This model can subsequently be employed for higher-level tasks by plugging them into some extra layers of neurons in a process known as transfer learning \cite{Rao2019-qq,Bepler2021-ci}.
 
-Here, we argue that Transformers can be a great aid within mass spectrometry-based proteomics. We are demonstrating the TAPE sub-model, Protein-BERTs,  utility when predicting MS2 spectra from peptide sequences. We are using the training and test sets of the popular Prosit \cite{Gessulat2019-el} predictor, and demonstrate that the transformer-based predictor, which we named Prosit Transformer, drastically outperforms the old implementation of Prosit. 
+Here, we argue that Transformers can be a great aid within mass spectrometry-based proteomics. We demonstrate that a TAPE sub-model, Protein-BERT, can be used for the prediction of MS2 spectrum intensities from peptide sequences. We are using the training and test sets of the popular Prosit \cite{Gessulat2019-el} predictor, and demonstrate that the transformer-based predictor, which we named Prosit Transformer, drastically outperforms the old implementation of Prosit. 
 
 \section*{Methods}
 \subsection*{Data}
@@ -71,7 +71,7 @@ We downloaded the Prosit training data from \url{https://figshare.com/projects/P
 
 \subsection*{Architecture}
 
-The Tape model consists of twelve 768 hidden units attention layers, both with the attention dropout (DropHead) rate \cite{Zhou2020-ji} and regular dropout rate set to 0.1. The Prosit-specific transformer has the same parameter but consists of 9 attention layers. The meta-data layer is a multilayer perceptron (MLP) with two layers of size 512 units followed by a dropout rate of 0.1 each. The final prediction layer has the same structure, except for no dropout after the final layer.  The activation function is ReLU, except for the prediction layer where the first layer uses a ReLU6 \cite{Howard2017-yv} i.e. a max(0,min(6,x)) function as an activation function, and the final layer uses a linear layer.
+The TAPE model consists of twelve 768 hidden units attention layers, both with the attention dropout (DropHead) rate \cite{Zhou2020-ji} and regular dropout rate set to 0.1. The Prosit-specific transformer has the same parameter but consists of 9 attention layers. The meta-data layer is a multilayer perceptron (MLP) with two layers of size 512 units followed by a dropout rate of 0.1 each. The final prediction layer has the same structure, except for no dropout after the final layer.  The activation function is ReLU, except for the prediction layer where the first layer uses a ReLU6 \cite{Howard2017-yv} i.e. a max(0,min(6,x)) function as an activation function, and the final layer uses a linear layer.
 
 
 
@@ -93,12 +93,13 @@ The model was trained on the Berzelius SuperPOD, a GPU cluster consisting of 60 
 We set out to test whether Transformers are a technology fit for spectrum intensity predictions, i.e., to predict the intensities of the most commonly observed ion-series ($b^+, b^{2+}, b^{3+}, y^{+}, y^{2+}, and y^{3+}$) of product-ion spectra from peptide fragmentation. The length of the peptides ranged between 7 to 30  amino acids long. As a testbed, we selected to use the train/test data and the preprocessing coming with the Prosit predictor. Prosit’s scripts calculating the intensity vectors, adopting meta-data, and calculating predictions’ angular similarity has been found robust after years of usage. We also found it straightforward to set up a benchmark, as we could reuse the Prosit test sets just out of the box. To avoid confusion, we will refer to the traditional Prosit predictor as Prosit RNN from hereon.
 
 \subsection*{Model}
-We set out to use the setup previously used for training and testing the Prosit model but with a transformer. We used the pre-trained encoder/decoder model TAPE \cite{Rao2019-qq} and retrofitted it with a Prosit-specific decoder and some additional application-specific code (See Figure 1). The Tape model will encode the peptide into a 512-dimensional embedding. Furthermore, just as for the original RNN-based Prosit model, we used layers for handling meta-data consisting of the charge state of the spectrum and its collision energy (CE). The charge states range from one to six, represented as 6-dimensional one-hot-encoding. Hence, the meta-data layer has seven inputs nodes to account for both the charge state and CE. The meta-layer transforms the metadata into a 512-dimensional vector that is subsequently is combined with the encoded peptide by element-wise multiplication. Then a Prosit-specific Transformer will decode this combined embedding. Lastly, a two-layered Multilayer perception (MLP) follows the decoding layer, serving as a prediction layer to predict the spectrum intensity. The MLP used activation by a hinge loss function constrained between 0 and 6 (a RELU6 function) as activation between the two final layers to avoid so-called gradient explosion. For the training, the objective function was the mean angular similarity between the observed and predicted spectrum intensity vectors.
+We set out to use the setup previously used for training and testing the Prosit model but with a transformer. We used the pre-trained encoder/decoder model TAPE \cite{Rao2019-qq} and retrofitted it with a Prosit-specific decoder and some additional application-specific code (See Figure \ref{fig:architecture}). The Tape model will encode the peptide into a 512-dimensional embedding. Furthermore, just as for the original RNN-based Prosit model, we used layers for handling meta-data consisting of the charge state of the spectrum and its collision energy (CE). The charge states range from one to six, represented as 6-dimensional one-hot-encoding. Hence, the meta-data layer has seven inputs nodes to account for both the charge state and CE. The meta-layer transforms the metadata into a 512-dimensional vector that is subsequently is combined with the encoded peptide by element-wise multiplication. Then a Prosit-specific Transformer will decode this combined embedding. Lastly, a two-layered Multilayer perception (MLP) follows the decoding layer, serving as a prediction layer to predict the spectrum intensity. The MLP used activation by a hinge loss function constrained between 0 and 6 (a RELU6 function) as activation between the two final layers to avoid so-called gradient explosion. For the training, the objective function was the mean angular similarity between the observed and predicted spectrum intensity vectors.
 
 
 \begin{figure}[htb]
-\includegraphics[width=8cm]{./figures/Architecture.png}
-\caption{Architecture of the Prosit Transformer. The model is dependant on a pre-trained encoder from the TAPE project and uses the design of TAPE for a Prosit Specific decoder. However, our model implements many of the design features of Prosit RNN, i.e., layers handling meta-data and final intensity prediction.}
+\centering
+\includegraphics[width=6cm]{./img/architecture.png}
+\caption{{\bf Architecture of the Prosit Transformer.} The model is dependant on a pre-trained encoder from the TAPE project and uses the design of TAPE for a Prosit Specific decoder. However, our model implements many of the design features of Prosit RNN, i.e., layers handling meta-data and final intensity prediction. \label{fig:architecture}}
 \end{figure}
 
 
@@ -106,53 +107,42 @@ We set out to use the setup previously used for training and testing the Prosit 
 
 During the training, we used a batch size of 1024, the learning rate of 0.0001, gradient accumulation step of one, and a linear learning rate schedular with 10000 warmup steps. The training proceeded until no further improvement over ten epochs.
 
-To obtain better accuracy in predicting present and absent peaks, we introduced a hyperparameter, $\delta$, setting an artificial offset of the intensities of absent peaks to $\delta_p =\delta / |\rm{number of considered peaks}|$. This is to add an extra penalty if the model predicts intensities for absent peaks. By varying the size of $\delta$, we can control the model’s propensity to predict peaks as absent, and by such means tune the model’s false positive and false negative predictions. We measured the false discovery rate and the false-negative rate of each spectrum and then plotted the average angular similarity, the FDR, and the FNR for different choices of $\delta$. We selected $\delta=0.34$ for the final training. (See Figure 2)
+To obtain better accuracy in predicting present and absent peaks, we introduced a hyperparameter, $\delta$, setting an artificial offset of the intensities of absent peaks to $\delta_p =\delta / |\rm{number of considered peaks}|$. This is to add an extra penalty if the model predicts intensities for absent peaks. By varying the size of $\delta$, we can control the model’s propensity to predict peaks as absent, and by such means tune the model’s false positive and false negative predictions. We measured the false discovery rate and the false-negative rate of each spectrum and then plotted the average angular similarity, the FDR, and the FNR for different choices of $\delta$. We selected $\delta=0.34$ for the final training. (See Figure \ref{fig:delta})
 
 
 \begin{figure}[htb]
-\includegraphics[width=8cm]{./figures/compare_delta.png}
-\caption{
-Adjust training to predict absence/presence of individual MS2 peaks. To obtain better prediction accuracy of present and absent MS2 peaks, we adjusted the intensities of absent peaks from zero to $\delta$. We measured the false discovery rate (FDR) and the false-negative rate (FNR) of each spectrum and then plotted the average angular similarity, the FDR, and the FNR for different choices of $\delta$. We selected $\delta=0.34$ for the final training.  The values should be compared to the ones of the Prosit RNN, which had an FDR of X and an FNR of Y. The predicted spectra were not post-processed for the measurements in this figure (See Methods).}
+\centering
+\includegraphics[width=8cm]{./img/compare_delta.png}
+\caption{{\bf The effect of adjusting the hyperparameter $\delta$ on the ability to predict absence/presence of individual MS2 peaks.} To obtain better prediction accuracy of present and absent MS2 peaks, we adjusted the intensities of absent peaks from zero to $\delta$. We measured the false discovery rate (FDR) and the false-negative rate (FNR) of each spectrum and then plotted the average angular similarity, the FDR, and the FNR for different choices of $\delta$. We selected $\delta=0.34$ for the final training.  The predicted spectra were not post-processed for the measurements in this figure (See Methods). \label{fig:delta}}
 \end{figure}
 
 
 \subsection*{Test of performance}
 
-To test the performance of our final Prosit Transformer, we investigated its performance on the same held-out test set as used when initially training Prosit RNN. We calculated the so-called angular similarity between the predicted and observed intensities for both predictors. Overall, we see that the predictions from Prosit Transformer have a higher angular similarity than Prosit RNN and are hence more accurate (Figure 3A). The Prosit Transformer increased the median angular similarity from Prosit RNN’s 0.908 to 0.929. We also see that Prosit Transformer obtained a higher angular similarity than Prosit RNN in 75.7% of the spectra, while the opposite was true in 24.3% of the spectra. The same pattern was also true when dividing the PSMs based on their peptide’s lengths (Figure 3B). We also wanted to compare the predictors’ ability to predict present and absent (zero intensity) fragment peaks.  Our choice of hyperparameter delta for Prosit Transformer resulted in a lower fraction of observed absent peaks among the predicted non-zero intensity peaks (Figure 3C) while observing a higher fraction of predicted absent peaks among the observed non-zero intensity peaks (Figure 3D) for Prosit Transformer compared to Prosit RNN.
-
-
-
-
-
+To test the performance of our final Prosit Transformer, we investigated its performance on the same held-out test set as used when initially training Prosit RNN. We calculated the so-called angular similarity between the predicted and observed intensities for both predictors. Overall, we see that the predictions from Prosit Transformer have a higher angular similarity than Prosit RNN and are hence more accurate (Figure \ref{fig:performance}A). The Prosit Transformer increased the median angular similarity from Prosit RNN’s 0.908 to 0.929. We also see that Prosit Transformer obtained a higher angular similarity than Prosit RNN in 75.7\% of the spectra, while the opposite was true in 24.3\% of the spectra. The same pattern was also true when dividing the PSMs based on their peptide’s lengths (Figure \ref{fig:performance}B). We also wanted to compare the predictors’ ability to predict present and absent (zero intensity) fragment peaks.  Our choice of hyperparameter delta for Prosit Transformer resulted in a lower fraction of observed absent peaks among the predicted non-zero intensity peaks (Figure \ref{fig:performance}C) while observing a higher fraction of predicted absent peaks among the observed non-zero intensity peaks (Figure \ref{fig:performance}D) for Prosit Transformer compared to Prosit RNN.
 
 
 \begin{figure}[htb]
-\includegraphics[width=8cm]{./figures/spectralAngleDist.png}
-Figure 3: The prediction accuracy of the predictors. (A) We made separate histograms and smoothed them with a kernel density estimator to observe the distribution of angular similarity for the spectra predicted with Prosit Transformer and Prosit RNN. (B) The same angular similarity was also stratified by the length of peptides (C) We also measured the false discovery rate, i.e. the fraction of observed absent peaks among the predicted non-zero intensity peaks, for each spectrum, and (D) the false-negative rate, i.e. the fraction of predicted absent peaks among the observed non-zero intensity peaks.
-\end{figure}
-\begin{figure}[htb]
-\includegraphics[width=8cm]{./figures/violin_sa_pepLen.png}
-Figure 3: The prediction accuracy of the predictors. (A) We made separate histograms and smoothed them with a kernel density estimator to observe the distribution of angular similarity for the spectra predicted with Prosit Transformer and Prosit RNN. (B) The same angular similarity was also stratified by the length of peptides (C) We also measured the false discovery rate, i.e. the fraction of observed absent peaks among the predicted non-zero intensity peaks, for each spectrum, and (D) the false-negative rate, i.e. the fraction of predicted absent peaks among the observed non-zero intensity peaks.
-\end{figure}
-\begin{figure}[htb]
-\includegraphics[width=8cm]{./figures/FDR.png}
-Figure 3: The prediction accuracy of the predictors. (A) We made separate histograms and smoothed them with a kernel density estimator to observe the distribution of angular similarity for the spectra predicted with Prosit Transformer and Prosit RNN. (B) The same angular similarity was also stratified by the length of peptides (C) We also measured the false discovery rate, i.e. the fraction of observed absent peaks among the predicted non-zero intensity peaks, for each spectrum, and (D) the false-negative rate, i.e. the fraction of predicted absent peaks among the observed non-zero intensity peaks.
-\end{figure}
-\begin{figure}[htb]
-\includegraphics[width=8cm]{./figures/FNR.png}
-Figure 3: The prediction accuracy of the predictors. (A) We made separate histograms and smoothed them with a kernel density estimator to observe the distribution of angular similarity for the spectra predicted with Prosit Transformer and Prosit RNN. (B) The same angular similarity was also stratified by the length of peptides (C) We also measured the false discovery rate, i.e. the fraction of observed absent peaks among the predicted non-zero intensity peaks, for each spectrum, and (D) the false-negative rate, i.e. the fraction of predicted absent peaks among the observed non-zero intensity peaks.
+\centering
+\begin{tabular}{cc}
+\includegraphics[width=6cm]{./img/spectralAngleDist.png} & \includegraphics[width=6cm]{./img/violin_sa_pepLen.png}\\
+A & B \\
+\includegraphics[width=6cm]{./img/fdr.png} & \includegraphics[width=6cm]{./img/fnr.png} \\
+C & D 
+\end{tabular}
+\caption{{\bf Comparison of the accuracy of Prosit Transformer and Prosit RNN.} (A) We made separate histograms and smoothed them with a kernel density estimator to observe the distribution of angular similarity for the spectra predicted with Prosit Transformer and Prosit RNN. (B) The same angular similarity was also stratified by the length of peptides (C) We also measured the false discovery rate, i.e. the fraction of observed absent peaks among the predicted non-zero intensity peaks, for each spectrum, and (D) the false-negative rate, i.e. the fraction of predicted absent peaks among the observed non-zero intensity peaks.\label{fig:performance}}
 \end{figure}
 
 \subsection*{Prosit Transformer’s ability to model collision energy}
 
-We also wanted to test that the improved ability of Prosit Transformer to predict ms2 intensities did not affect the predictor’s ability to model collision energy’s (CE’s) influence on predicted spectra. We hence isolated batches of spectra with CE={0.2, 0.25, 0.3, 0.35, 0.4} and measured the median Angular Similarity when predicting the spectra for a range of different collision energies (Figure 4). The highest angular similarity was found between the observed and predicted spectra when setting CE to the set’s actual specified value.
-
+We also wanted to test that the improved ability of Prosit Transformer to predict ms2 intensities did not affect the predictor’s ability to model collision energy’s (CE’s) influence on predicted spectra. We hence isolated batches of spectra with CE={0.2, 0.25, 0.3, 0.35, 0.4} and measured the median Angular Similarity when predicting the spectra for a range of different collision energies (Figure \ref{fig:ce}). The highest angular similarity was found between the observed and predicted spectra when setting CE to the set’s actual specified value.
 
 
 
 \begin{figure}
-\includegraphics[width=8cm]{./figures/CeCalibration.png}
-Figure 4: The mean spectral angle as a function of the collision energy (CE) for spectra acquired with different CEs. 
+\centering
+\includegraphics[width=12cm]{./img/ce_calibration.png}
+\caption{{\bf The mean spectral angle as a function of the collision energy (CE) for spectra acquired with different CEs.}\label{fig:ce}} 
 \end{figure}
  
 \section*{Discussion}
@@ -163,7 +153,7 @@ Here we made use of the framework provided by the original Prosit project. It wa
 
 
 \section*{Acknowledgements}
-Vital parts of this manuscript were consieved during the Dagstuhl Seminar 21271 on Computational Proteomics, Julky 2021. 
+Vital parts of this manuscript were consieved during the Dagstuhl Seminar 21271 on Computational Proteomics, July 2021. 
 
 The training of the Prosit Transformer model was enabled by the supercomputing resource Berzelius provided by National Supercomputer Centre at Linköping University and the Knut and Alice Wallenberg foundation.
 
