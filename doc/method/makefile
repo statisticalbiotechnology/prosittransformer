@@ -1,6 +1,6 @@
 main=transform
 
-all: ${main}.pdf # supplement.pdf coverletter.pdf biorxiv.pdf # diff.pdf
+all: ${main}.pdf coverletter.pdf # supplement.pdf  biorxiv.pdf # diff.pdf
 
 ${main}.pdf: ${main}.tex ${main}.bib # img/*
 
