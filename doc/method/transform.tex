@@ -145,13 +145,14 @@ We also wanted to test that the improved ability of Prosit Transformer to predic
 
 \subsection*{Artificial Spectral Libraries for DIA searches}
 
-\begin{\begin{itemize}
+\begin{itemize}
   \item Download uniprot FASTA-file
   \item Generate decoy database by reversing uniprot database
   \item Use Prosit-RNN and Prosit Transformer to generate spectra for all tryptic peptides in both target and decoy database: ``Each database was digested in silico to create all possible +2H and +3H peptides with precursor m/z within 396.43 and 1002.70, assuming up to one missed cleavage. Peptides were further limited to be between 7 and 30 amino acids to match the restrictions of the Prosit tool.'' Also: ``NCE was set to 33, and +2H was assumed as the default charge state.'' and `` In general, NCE were assumed to be 33 (yeast was processed using NCE from 15 to 42 in 3 NCE increments) but modified to account for charge state. Since DIA assumes all peptides are of a fixed charge, we adjusted the NCE setting as if peptides were fragmented at the wrong charge state using the formula: AdjustedNCE=NCE x factor(default charge) / factor(peptide charge)
 where the factors were 1.0 for +1H, 0.9 for +2H, 0.85 for +3H, 0.8 for +4H, and 0.75 for +5H and above.''
 \item Search the wide-DIA data and see how many peptides above 1\% FDR you identify with the RNN and Transformer generated set.   
-\end{itemize}}
+\end{itemize}
+
 
 
 \section*{Discussion}
