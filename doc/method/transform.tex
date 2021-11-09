@@ -42,7 +42,7 @@ $^1$Science for Life Laboratory, School of Engineering Sciences in Chemistry, Bi
 $^2$Computational Mass Spectrometry, Technical University of Munich (TUM), Freising, Germany
 
 \begin{abstract}
-Machine learning has been an integral part of interpreting data from mass spectrometry-based proteomics for a long time. Relatively recently, a machine-learning structure appeared that has been successful in other areas of bioinformatics, Transformers. By using transfer learning, i.e., adapting a network trained for other tasks to new functionality, these relatively large networks become more accessible since less data is generally required and the training time is improved substantially.
+Machine learning has been an integral part of interpreting data from mass spectrometry-based proteomics for a long time. Relatively recently, a machine-learning structure appeared that has been successful in other areas of bioinformatics, Transformers. Furthermore, the implementation of Transformers within bioinformatics has become relatively convenient due to transfer learning, i.e., adapting a network trained for other tasks to new functionality. Transfer learning makes these relatively large networks more accessible since less data is generally required, and the training time improves substantially.
 
 Here, we implemented a Transformer based on the pre-trained model TAPE to predict MS2 intensities. TAPE is a general model trained to predict missing residues from protein sequences. Despite being trained for a different task, we could modify its behavior by adding a prediction head at the end of the TAPE model and fine-tune it using the spectrum intensity from the training set to the well-known predictor Prosit.
 
