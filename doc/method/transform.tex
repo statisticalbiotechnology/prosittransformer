@@ -138,23 +138,23 @@ To test the performance of our final Prosit Transformer, we investigated its per
 
 We set out to eliminate other explanations for Prosit Transformer's elevated performance. A notable difference is the difference in size, Prosit RNN contains 3 million parameters, while Prosit Transformer contains 163 million parameters, which gives the Transformer an unfair advantage. We hence trained an expanded the long short-term memory models of the RNNs until they reached a similar size to the ones of the Transformers. This extended RNN gave a median angular similarity of 0.892 as compared to Prosit Transformer's 0.929. Further, Prosit Transformer also outperformed the extended RNNs encoder in combination with Prosit Transformer’s decoder (median angular similarity of 0.927), as well as Prosit Transformer's encoder in combination with Prosit RNN's decoder (median angular similarity of 0.915). See Table \ref{tab:architecture} for a overview of the permutations of encoder decode architectures and their sizes.
 
-When training the RNN-models, the learning rate had to be decreased from 0.0001 to 0.00008 to get the model to learn. Everything else was the same as for the Transformer-Transformer model. We also had to modify the gated recurrent unit (GRU) of the Prosit RNN, leading to some minor differences between the Extended Prosit RNN and Prosit RNN. \todo{Markus, is this right?}
+When training the RNN-models, the learning rate had to be decreased from 0.0001 to 0.00008 to get the model to learn. Everything else was the same as for the Transformer-Transformer model. We also had to switch the gated recurrent unit (GRU) of the Prosit RNN to an LSTM to use the TAPE framework, leading to minor differences between the Extended Prosit RNN and Prosit RNN. \todo{Markus, is this right? I added the reason for the switch.}
 
 Interestingly, the big RNN-RNN model got worse results than regular Prosit. The decrease could be due to that increase from 3M to 178M parameters leading to overfitting, requiring more data to justify such a massive model for the type of architecture. However, in all cases a performance increase was observed when adding a Transformer to the architecture. Interestingly, the most significant increase in performance appeared when implementing the Transformer as a decoder, i.e., after the peptide has been encoded and combined with the meta-data, and not in the encoding of the peptide, although this improve the results as well. 
 
-\todo{I Dont fully understand: One exciting experiment to perform in the future would be to find a way to isolate the charge states and collision energy to determine what precisely the Transformer is more usefully applying in its prediction compared to the recurrent architecture.}f
+\todo{I Dont fully understand: One exciting experiment to perform in the future would be to find a way to isolate the charge states and collision energy to determine what precisely the Transformer is more usefully applying in its prediction compared to the recurrent architecture. Since it seems that the Transformer more adavantagously uses the meta-data compared to the RNN. So it might be cool what part of the meta-data that the Transformer can extract more information from, is it the collision energy, charget state, or both? I havent thought too deeply how to see this, but one possible experiemnt remove the collision energy and see how the peformance compares between the Transformer and the RNN.}
 
 \begin{table}[htbp]
     \caption{{\bf Extended RNN models' size and performance.} We trained and tested different permutations of expanded RNNs and Transformers of comparable size and compared their pridiction accuracy.}
-      \begin{tabular}{r@{-}l|cccl}
+      \begin{tabular}{r@{-}l|cccccccl}
       \hline
-      \multicolumn{2}{c|}{Architecture for} & Encoder & Decoder & Total & Median Angular \\
-      Encoder   & Decoder    & size    & size    & size  & similarity \\
+      \multicolumn{2}{c|}{Architecture for} & Encoder & Encoder & Encoder & Decoder & Decoder & Decoder & Total & Median Angular \\
+      Encoder   & Decoder    & size    & layers & units & size    & layers & units   & size  & similarity \\
       \hline
-      Transformer & Transformer & 85M   & 64M   & 164M  & 0.929 \\
-      RNN & RNN & 77M   & 93M   & 178M  & 0.892 \\
-      Transformer & RNN & 64M   & 94M   & 172M  & 0.9156 \\
-      RNN & Transformer & 53M   & 113M  & 173M  & 0.927 \\
+      Transformer & Transformer & 85M   & 12 & 768 & 64M   & 9 & 768 & 164M  & 0.929 \\
+      RNN & RNN & 77M   & 5 & 1028 & 93M   & 5 & 2056 & 178M  & 0.892 \\
+      Transformer & RNN & 64M  & 9 & 768 & 94M   & 10 & 768  & 172M  & 0.9156 \\
+      RNN & Transformer & 53M   & 6 & 768 & 113M   & 6 & 768  & 173M  & 0.927 \\
       \hline
       \end{tabular}%
     \label{tab:architecture}%
