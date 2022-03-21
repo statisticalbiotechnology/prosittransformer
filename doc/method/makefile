@@ -5,7 +5,7 @@ all: ${main}.pdf coverletter.pdf # supplement.pdf  biorxiv.pdf # diff.pdf
 ${main}.pdf: ${main}.tex ${main}.bib # img/*
 
 diff.tex: ${main}.tex
-	git show sub1:./$? > /tmp/$?
+	git show sub2:./$? > /tmp/$?
 	latexdiff /tmp/$? $? > diff.tex
 
 

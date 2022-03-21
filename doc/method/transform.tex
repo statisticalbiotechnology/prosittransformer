@@ -162,9 +162,7 @@ At first the conclusion that the Transformer-Transformer model performed best mi
 
 \subsection*{Time comparision of sprectrum prediciton}
 
-The models in table \ref{tab:architecture} using a Transformer as an encoder required $\sim 3$\ GPU days, while the models using an RNN encoder needed $\sim 6$\ GPU days.
-
-Both regular Prosit and Prosit Transformer were timed for predicting $1000$, $10000$, and $100000$ spectra to see how much the increased model complexity for Prosit Transformer affects prediction time; see table \ref{tab:predictionTime} below. Prosit Transformer requires roughly 40 times more time, so there is a clear trade-off for prediction accuracy and time requirements. 
+The Prosit Transformer was quicker to train than the full RNN model (approximately 3 versus 6 GPU~days). However, all the models in Table \ref{tab:architecture}, were slower than the original Prosit-RNN due to their increased size. To demonstrate this, both regular Prosit and Prosit Transformer were timed for predicting $1000$, $10000$, and $100000$ spectra; see table \ref{tab:predictionTime} below. Prosit Transformer requires roughly 40 times more time, so there is a trade-off between accuracy and time requirements for the transformer's predictions when increasing model size.
 
 \begin{table}[htbp]
     \caption{{\bf The larger Transformer model needs more time to predict spectra.} We measured the required time to predict spectra from peptides for both Prosit RNN and Prosit Transformer.}
