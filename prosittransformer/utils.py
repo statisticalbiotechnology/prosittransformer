@@ -258,6 +258,7 @@ class cleanTapeOutput:
         intensities = self.mask_outofrange(intensities, sequence_lengths)
         intensities = self.mask_outofcharge(intensities, charges)
         intensities = self.reshape_flat(intensities)
+        
 
         spectral_angle = 1 - self.masked_spectral_distance(intensities_raw, intensities)
         spectral_angle = np.nan_to_num(spectral_angle)

@@ -285,3 +285,4 @@ tf_model/
 tape.onnx
 result/
 downloadProsithdf5.sh
+data

@@ -23,5 +23,6 @@ setup(
     validate=validate:cli
     prosit2tape=prosit2tape:cli
     ceCalibration=ceCalibration:cli
+    createPrositOutput=createPrositOutput:cli
     '''
 )
