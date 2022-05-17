@@ -2,7 +2,7 @@
 ```console
 prosit@transformer:~$ pip install -e .
 ```
-Everything that is required will be install except for Nvidia Apex. Install it here: https://github.com/NVIDIA/apex\
+Everything that is required will be install except for Nvidia Apex. Install it here: https://github.com/NVIDIA/apex
 However, only training requires Nvidia Apex
 # Downloads: Data & Models
 ### Tape training data
