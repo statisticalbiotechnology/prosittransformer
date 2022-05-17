@@ -118,7 +118,7 @@ class CeCalibation(SelectCEData, cleanTapeOutput, CreateDataLoader, PytorchModel
     def _getSa(self, loader: DataLoader)->float:
         """Predict spectrum and get SA"""
         sa_list = list()
-        for batch in tqdm(loader):  
+        for batch in loader:  
             batch = {name: tensor.cuda(device=torch.device('cuda:0'), non_blocking=True)
                          for name, tensor in batch.items()}
             targets = batch["targets"].cpu().detach().numpy()
@@ -132,7 +132,7 @@ class CeCalibation(SelectCEData, cleanTapeOutput, CreateDataLoader, PytorchModel
     def _getCeCalibSeries(self, data: dict, range_x: np.array)->List[float]:
         """Get SA for different calibration series"""
         sa_list = list()
-        for i in range_x:
+        for i in tqdm(range_x):
             dataset = PrositFragmentationCEDataset(data, round(i,2))
             loader = self.getDataLoader(dataset)
             sa_list.append(self._getSa(loader))
@@ -163,7 +163,8 @@ class CeCalibation(SelectCEData, cleanTapeOutput, CreateDataLoader, PytorchModel
         ceDataDict = self.getCEdata()
         data_points = list()
         print("Start getting spectral angle for all CE series")
-        for ce in tqdm(list(ceDataDict.keys())):
+        for ce in list(ceDataDict.keys()):
+            print(f"Collecting SA for {ce} ce")
             CE_DATA = ceDataDict[ce]
             if len(CE_DATA) == 0:
                 print(f"no data for {ce}. Skip to next ce.")
