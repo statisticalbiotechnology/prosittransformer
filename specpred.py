@@ -39,25 +39,23 @@ def TokenizePeptides(peptides, tokenizer = TAPETokenizer()):
     input_ids = pad_sequences([tokenizer.encode(p) for p in peptides])
     return input_ids, np.ones_like(input_ids)
 
-
-
 def predictSpectrum(peptide, charge, ce = 20):
     p_charges = get_precursor_charge_onehot(charge)
     p_ces = np.hstack([ce])
     input_ids, input_mask = TokenizePeptides(peptide)
     model = getPrositTransformerModel()
 
-def predictSpectra(peptides, charges, ces = 20):
+def predictSpectra(peptides, charges, ces = 20, prediction_batch_size = 200):
     p_charges = get_precursor_charge_onehot(charges)
     p_ces = np.hstack(ces)
     input_ids, input_mask = TokenizePeptides(peptides)
     model = getPrositTransformerModel()
     prd_peaks = []
     prd_elapsed = 0
-    prd_batch = 200
+    
     while prd_elapsed < len(peptides): ## Predict until all valid PSMs are accounted for
-        if (prd_elapsed + prd_batch) > len(peptides): ## Truncate last prediction to match #PSMS
-            prd_batch = len(peptides) - prd_elapsed
+        if (prd_elapsed + prediction_batch_size) > len(peptides): ## Truncate last prediction to match #PSMS
+            prediction_batch_size = len(peptides) - prd_elapsed
 
         targets_data = { ## Load a batch of PSM CEs, charges, and peptide identifiers
            'collision_energy' : torch.FloatTensor(p_ces[prd_elapsed: (prd_elapsed+prd_batch)].astype(np.float32)),
@@ -102,11 +100,51 @@ def predictSpectra(peptides, charges, ces = 20):
 
     return theo_spectra
 
+def readPout(path, fdr = 0.05):
+    with open(path) as pout:
+        content = []       
+        words = pout.readline().split('\t')
+        fields = { w : ix for ix, w in enumerate(words) }
+        num_col = len(words)
+        qix = fields["percolator q-value"]
+        for line in pout:
+            words = line.split('\t')
+            if float(words[qix])>fdr:
+                break
+            proteins = "\t".join(words[num_col-1])
+            words = words[:num_col-1] + proteins
+            content.append(words)
+    scans = [int(words[fields["charge"]]) for words in content]
+    peptides = [words[fields["sequence"]] for words in content]
+    charges = [words[fields["charge"]] for words in content]     
+    return scans, peptides, charges       
+
 def readSpectra(path, scans):
-    return [] # spectra, charges, ces
+    obs_spectra = []
+    obs_ints, obs_mzs, ces = [], [], []
+    with mzml.read(mzml_file, use_index=True) as spectra:
+        for id, scan in enumerate(scans): ## Get the spectra that match the valid PSMs be scanNr
+            match = spectra[scan-1]
+            precursor = match["precursorList"]['precursor'][0]
+            ion = precursor['selectedIonList']['selectedIon'][0]
+            p_mz = float(ion['selected ion m/z']) # Measured mass to charge ratio of precursor ion
+            p_z = int(ion['charge state']) # Precursor charge
+            p_m = (p_mz - mass.Composition({'H+': 1}).mass())*p_z # Mass of precursor
+            ce = float(precursor['activation']['collision energy'])
+            obs_spectra.append({
+                "intensity": match['intensity array'],
+                "mz" : match['m/z array'],
+                "pcharge" : p_z,
+                "pmz" : p_mz,
+                "pmass" : p_m,
+                "CE" : ce,
+            })
+    return obs_spectra
 
 def rescoreSpectra(path, peptides, scans, tolerance=0.05):
-    spectra, charges, ces = readSpectra(path, scans)
+    obs_spectra = readSpectra(path, scans)
+    obs_ints, obs_mzs = [ os["intensity"] for os in obs_spectra ], [ os["mz"] for os in obs_spectra ]
+    charges, ces =  [ os["pcharge"] for os in obs_spectra ], [ os["CE"] for os in obs_spectra ]
     theo_spectra = predictSpectra(peptides, charges, ces)
     theo_mzs = [ ts["mz"] for ts in theo_spectra ]
     obs_matched_intensities = []
@@ -127,7 +165,14 @@ def rescoreSpectra(path, peptides, scans, tolerance=0.05):
         mse = np.sqrt(np.dot(diff,diff))
         imse = 1. / (1. + mse) 
         scores.append([cos_sim, ang_dist, cross_entropy, imse])
+        return scores
+
+def rescorePout(pin_path, mzml_path, fdr = 0.05):
+    scans, peptides, charges = readPout(pin_path, fdr)
+    return rescoreSpectra(path, peptides, scans)
+
 
 if __name__ == "__main__":
     print (predictSpectra(["IAMAPEPTIDE"],[3],[20])) 
+    print(rescorePout("pin","mzml"))
 
