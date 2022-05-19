@@ -82,7 +82,7 @@ def predictSpectra(peptides, charges, ces = 20, prediction_batch_size = 200):
         for cleave in range(1, min(30,len(peptide)-1)): ## Iterate over each fragment len 1-30
             for frag_charge in range(1,charge): # i.e. max fragment charge = precursor charge -1
                 theo_frags.append( # (m/z, intensity)
-                 (mass.fast_mass(peptide[cleave:], ion_type = 'y', charge=frag_charge, aa_mass=mod_masses),
+                 (mass.fast_mass(peptide[-cleave:], ion_type = 'y', charge=frag_charge, aa_mass=mod_masses),
                     prediction[(cleave-1)*6 + (frag_charge-1)])
                 )
                 theo_frags.append( # (m/z, intensity)
