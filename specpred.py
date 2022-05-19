@@ -45,7 +45,7 @@ def predictSpectrum(peptide, charge, ce = 20):
     input_ids, input_mask = TokenizePeptides(peptide)
     model = getPrositTransformerModel()
 
-def predictSpectra(peptides, charges, ces = 20, prediction_batch_size = 200):
+def predictSpectra(peptides, charges, ces = 20., prediction_batch_size = 200):
     p_charges = get_precursor_charge_onehot(charges)
     p_ces = np.hstack(ces)
     input_ids, input_mask = TokenizePeptides(peptides)
@@ -147,7 +147,7 @@ def readSpectra(mzml_file, scans):
             })
     return obs_spectra
 
-def rescoreSpectra(path, peptides, scans, tolerance=0.05):
+def rescoreSpectra(path, peptides, scans, tolerance=0.35):
     obs_spectra = readSpectra(path, scans)
     obs_ints, obs_mzs = [ os["intensity"] for os in obs_spectra ], [ os["mz"] for os in obs_spectra ]
     charges, ces =  [ os["pcharge"] for os in obs_spectra ], [ os["CE"] for os in obs_spectra ]
