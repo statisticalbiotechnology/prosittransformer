@@ -37,15 +37,18 @@ def TokenizePeptides(peptides, tokenizer = TAPETokenizer()):
     if isinstance(peptides, str):
         peptides = [peptides]
     input_ids = pad_sequences([tokenizer.encode(p[:30]) for p in peptides])
+    print(   input_ids )
     return input_ids, np.ones_like(input_ids)
 
-def predictSpectrum(peptide, charge, ce = 20):
+def predictSpectrum(peptide, charge, ce = 0.30):
     p_charges = get_precursor_charge_onehot(charge)
     p_ces = np.hstack([ce])
     input_ids, input_mask = TokenizePeptides(peptide)
     model = getPrositTransformerModel()
 
-def predictSpectra(peptides, charges, ces = 20., prediction_batch_size = 200):
+def predictSpectra(peptides, charges, ces = None, prediction_batch_size = 200):
+    if not ces:
+        ces = [0.30]*len(peptides)
     p_charges = get_precursor_charge_onehot(charges)
     p_ces = np.hstack(ces)
     input_ids, input_mask = TokenizePeptides(peptides)
@@ -71,23 +74,25 @@ def predictSpectra(peptides, charges, ces = 20., prediction_batch_size = 200):
         print("Elapsed predictions: {}".format(prd_elapsed))
 
     prd_peaks = np.concatenate(prd_peaks)
-    __, prd_peaks = cleanTapeOutput().getIntensitiesAndSpectralAngle(prd_peaks, prd_peaks, p_charges, input_ids)
+    __, prd_peaks = cleanTapeOutput().getIntensitiesAndSpectralAngle(prd_peaks, prd_peaks, p_charges, input_ids, start_stop_token=True)
     prd_peaks[prd_peaks < 0] = 0 ## Remove negative intensities
     ## Predict peaks end
 
     ## Create predicted spectrum
     theo_spectra = []
     for peptide, charge, prediction in zip(peptides,charges,prd_peaks):
+        prediction = prediction.reshape((29,6))
+        # print(prediction, prediction.shape, charge)
         theo_frags = []
-        for cleave in range(1, min(30,len(peptide)-1)): ## Iterate over each fragment len 1-30
-            for frag_charge in range(1,charge): # i.e. max fragment charge = precursor charge -1
+        for cleave in range(1, min(30,len(peptide))): ## Iterate over each fragment len 1-30
+            for frag_charge in range(1,min(charge+1,3)): # i.e. max fragment charge = precursor charge -1
                 theo_frags.append( # (m/z, intensity)
                  (mass.fast_mass(peptide[-cleave:], ion_type = 'y', charge=frag_charge, aa_mass=mod_masses),
-                    prediction[(cleave-1)*6 + (frag_charge-1)])
+                    prediction[cleave-1, frag_charge-1])
                 )
                 theo_frags.append( # (m/z, intensity)
                     (mass.fast_mass(peptide[:cleave], ion_type = 'b', charge=frag_charge, aa_mass=mod_masses),
-                    prediction[(cleave-1)*6 + 3 + (frag_charge-1)])
+                    prediction[(cleave-1), 3 + (frag_charge-1)])
                 )
         theo_frags = sorted(theo_frags)
 
@@ -116,7 +121,7 @@ def readPout(path, fdr = 0.05):
             proteins = "\t".join(words[num_col-1])
             words = words[:num_col-1] + [proteins]
             content.append(words)
-    # content = content[:10] # just take the first entries when debugging
+    #content = content[1:2] # just take the first entries when debugging
     scans = [int(words[fields["scan"]]) for words in content]
     peptides = [words[fields["sequence"]] for words in content]
     charges = [int(words[fields["charge"]]) for words in content]     
@@ -136,7 +141,7 @@ def readSpectra(mzml_file, scans):
             try:
                 ce = float(precursor['activation']['collision energy'])
             except KeyError:
-                ce=20.    
+                ce=1.1  
             obs_spectra.append({
                 "intensity": match['intensity array'],
                 "mz" : match['m/z array'],
@@ -147,7 +152,7 @@ def readSpectra(mzml_file, scans):
             })
     return obs_spectra
 
-def rescoreSpectra(path, peptides, scans, tolerance=0.35):
+def rescoreSpectra(path, peptides, scans, tolerance=0.005):
     obs_spectra = readSpectra(path, scans)
     obs_ints, obs_mzs = [ os["intensity"] for os in obs_spectra ], [ os["mz"] for os in obs_spectra ]
     charges, ces =  [ os["pcharge"] for os in obs_spectra ], [ os["CE"] for os in obs_spectra ]
@@ -157,16 +162,20 @@ def rescoreSpectra(path, peptides, scans, tolerance=0.35):
     obs_matched_intensities = []
     for sought_mz, intens, mzs in zip(theo_mzs, obs_ints, obs_mzs):
         matched_spec=[]
+        print(np.max(intens))
         for m in sought_mz:
+            #print(m, mzs[(mzs >= m - tolerance) & (mzs <= m + tolerance)], intens[(mzs >= m - tolerance) & (mzs <= m + tolerance)])
             matched_spec.append(np.max(intens[(mzs >= m - tolerance) & (mzs <= m + tolerance)], initial=0.))
         obs_matched_intensities.append(np.array(matched_spec))
 
     scores = []
     for theo, obs, peptide in zip(theo_intensities, obs_matched_intensities, peptides):
-        # print(peptide)
+        print(peptide)
         # print(theo, obs)
         theo = theo/np.sqrt(np.dot(theo,theo))
         obs = obs/np.sqrt(np.dot(obs,obs))
+        #print(theo)
+        #print(obs)
         cos_sim = np.dot(theo,obs)
         ang_dist = 2*np.arccos(cos_sim)/np.pi
         cross_entropy = - np.dot(theo, np.log2(obs, where=(obs!=0.))) # , out=np.zeros_like(m)
@@ -183,9 +192,11 @@ def rescorePout(pin_path, mzml_path, fdr = 0.05):
 
 
 if __name__ == "__main__":
-#    print (predictSpectra(["IAMAPEPTIDETHATISWERYSTRETCHEDANDTHATISAPARANTLYFANTASTICLYWEIRD"],[3],[20])) 
+#    print (predictSpectra(["IAMAPEPTIDETHATISWERYSTRETCHEDANDTHATISAPARANTLYFANTASTICLYWEIRD"],[3],[0.3])) 
+#    print (predictSpectra(["AAAAAAA"],[2],[0.5])) 
     print(rescorePout(
         "data/data_yeast_casanovo/percolator.target.peptides.txt",
-        "data/data_yeast_casanovo/preproc.high.yeast.PXD003868.mzML")
-        )
-
+        "data/data_yeast_casanovo/preproc.high.yeast.PXD003868.mzML"))
+#    rescorePout(
+#        "data/data_yeast_casanovo/percolator.target.peptides.txt",
+#        "data/data_yeast_casanovo/preproc.high.yeast.PXD003868.mzML")
