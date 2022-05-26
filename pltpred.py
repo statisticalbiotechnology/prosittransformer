@@ -41,6 +41,7 @@ def TokenizePeptides(peptides, tokenizer = TAPETokenizer()):
 
 
 def predictMsmsSpectrum(peptide, precursor_charge, precursor_mz, ce):
+    precursor_charge = precursor_charge -1
     p_charges = get_precursor_charge_onehot([precursor_charge])
     p_ces = np.hstack([ce])
     input_ids, input_mask = TokenizePeptides([peptide])
@@ -61,7 +62,7 @@ def predictMsmsSpectrum(peptide, precursor_charge, precursor_mz, ce):
     prediction = prd_peaks[0]
     theo_frags = []
     for cleave in range(1, min(30,len(peptide)-1)): ## Iterate over each fragment len 1-30
-        for frag_charge in range(1,charge+1): # i.e. max fragment charge = precursor charge 
+        for frag_charge in range(1,precursor_charge+1): # i.e. max fragment charge = precursor charge 
             theo_frags.append( # (m/z, intensity)
                 (mass.fast_mass(peptide[-cleave:], ion_type = 'y', charge=frag_charge, aa_mass=mod_masses),
                     prediction[(cleave-1)*6 + (frag_charge-1)]))
@@ -73,7 +74,7 @@ def predictMsmsSpectrum(peptide, precursor_charge, precursor_mz, ce):
     spectrum = sus.MsmsSpectrum("Predicted", precursor_mz, precursor_charge,
                             [ f[0] for f in theo_frags], 
                             [ f[1] for f in theo_frags],
-                            peptide=peptide).annotate_peptide_fragments(0.5, 'Da', ion_types='by')
+                            peptide=peptide).annotate_peptide_fragments(0.5, 'Da', ion_types='by',max_ion_charge=precursor_charge)
 
     return spectrum
 
@@ -90,6 +91,8 @@ def readPout(path, scan, fdr = 0.05):
             if float(words[qix])>fdr:
                 break
             if len(words[fields["sequence"]]) > 30: # Remove peptides longer than the net can handle
+                continue
+            if int(words[fields["file_idx"]]) != 0: # Remove PSMs not from first file
                 continue
             proteins = "\t".join(words[num_col-1])
             words = words[:num_col-1] + [proteins]
@@ -111,9 +114,9 @@ def readSpectrum(mzml_file, scan, peptide):
         p_z = int(ion['charge state']) # Precursor charge
         p_m = (p_mz - mass.Composition({'H+': 1}).mass(charege=1))*p_z # Mass of precursor
         try:
-            ce = float(precursor['activation']['collision energy'])
+            ce = float(precursor['activation']['collision energy'])/100.
         except KeyError:
-            ce=20.    
+            ce=0.3    
         obs_spectrum = {
                 "intensity": match['intensity array'],
                 "mz" : match['m/z array'],
@@ -122,11 +125,12 @@ def readSpectrum(mzml_file, scan, peptide):
                 "pmass" : p_m,
                 "CE" : ce,
             }
-        obsMsmsSpectrum = sus.MsmsSpectrum(peptide, p_mz, p_z, match['m/z array'].values, match['intensity array'].values, peptide=peptide).remove_precursor_peak(20., 'ppm').filter_intensity(min_intensity=0.05, max_num_peaks=50).scale_intensity('root').annotate_peptide_fragments(20., 'ppm', ion_types='aby')
+        print(obs_spectrum)
+        obsMsmsSpectrum = sus.MsmsSpectrum(peptide, p_mz, p_z, match['m/z array'], match['intensity array'], peptide=peptide).remove_precursor_peak(20., 'ppm').filter_intensity(min_intensity=0.05, max_num_peaks=50).annotate_peptide_fragments(20., 'ppm', ion_types='aby',max_ion_charge=p_z)
 
-    return obsMsmsSpectrum, obs_spectra
+    return obsMsmsSpectrum, obs_spectrum
 
-def plotMirror(pectrum_top, pectrum_bottom):
+def plotMirror(spectrum_top, spectrum_bottom):
     fig, ax = plt.subplots(figsize=(12, 6))
     sup.mirror(spectrum_top, spectrum_bottom, ax=ax)
     plt.show()
@@ -134,12 +138,14 @@ def plotMirror(pectrum_top, pectrum_bottom):
 def plotSpectrum(pout_file, mzml_file, scan):
     scan, peptide, charge = readPout(pout_file, scan)
     obsMsmsSpectrum, obs_spectrum = readSpectrum(mzml_file, scan, peptide)
-    predictedSpectrum = predictMsmsSpectrum(peptide, obs_spectrum["p_z"], obs_spectrum["p_mz"], obs_spectrum["CE"])
+    predictedSpectrum = predictMsmsSpectrum(peptide, obs_spectrum["pcharge"], obs_spectrum["pmz"], obs_spectrum["CE"])
     plotMirror(obsMsmsSpectrum, predictedSpectrum)
 
 if __name__ == "__main__":
-    plotSpectrum(
-        "data/data_yeast_casanovo/percolator.target.peptides.txt",
-        "data/data_yeast_casanovo/preproc.high.yeast.PXD003868.mzML",
-        int(69272))
-
+#    plotSpectrum(
+#        "data/data_yeast_casanovo/percolator.target.peptides.txt",
+#        "data/data_yeast_casanovo/preproc.high.yeast.PXD003868.mzML",
+#        int(69272))
+    plotSpectrum("/hd2/lukask/ms/graphtest/PXD028735/crux-output/percolator.target.peptides.txt",
+        "/hd2/lukask/ms/graphtest/PXD028735/converted/LFQ_Orbitrap_DDA_Yeast_01.mzML",
+        int(79530))
