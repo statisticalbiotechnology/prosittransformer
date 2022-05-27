@@ -24,7 +24,7 @@ def getPrositTransformerModel():
     model = model.to(torch.device('cuda:0'))
     return model
 
-def get_precursor_charge_onehot(charges, considered_charges = range(1,7)):
+def get_precursor_charge_onehot(charges, considered_charges = list(range(1,7))):
     if isinstance(charges, int):
         charges = [charges]
     array = np.zeros([len(charges), max(considered_charges)], dtype=int)
