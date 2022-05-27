@@ -46,7 +46,6 @@ def predictMsmsSpectrum(peptide, precursor_charge, precursor_mz, ce):
     p_charges = get_precursor_charge_onehot([precursor_charge])
     p_ces = np.hstack([ce])
     input_ids, input_mask = TokenizePeptides([peptide])
-    print(input_ids, input_mask)
     model = getPrositTransformerModel()
     targets_data = { ## Load a batch of PSM CEs, charges, and peptide identifiers
         'collision_energy' : torch.FloatTensor(p_ces.astype(np.float32)),
@@ -62,6 +61,7 @@ def predictMsmsSpectrum(peptide, precursor_charge, precursor_mz, ce):
     prd_peaks[prd_peaks < 0] = 0 ## Remove negative intensities
     theo_spectra = []
     prediction = prd_peaks[0]
+    print(prediction)
     theo_frags = []
     for cleave in range(1, min(30,len(peptide)-1)): ## Iterate over each fragment len 1-30
         for frag_charge in range(1,precursor_charge+1): # i.e. max fragment charge = precursor charge 
