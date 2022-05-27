@@ -44,6 +44,7 @@ def predictMsmsSpectrum(peptide, precursor_charge, precursor_mz, ce):
     p_charges = get_precursor_charge_onehot([precursor_charge])
     p_ces = np.hstack([ce])
     input_ids, input_mask = TokenizePeptides([peptide])
+    print(input_ids, input_mask)
     model = getPrositTransformerModel()
     targets_data = { ## Load a batch of PSM CEs, charges, and peptide identifiers
         'collision_energy' : torch.FloatTensor(p_ces.astype(np.float32)),
@@ -55,7 +56,7 @@ def predictMsmsSpectrum(peptide, precursor_charge, precursor_mz, ce):
                                for name, tensor in targets_data.items()}
     prd_peaks = [model(**targets_data)[0].cpu().detach().numpy()]
     prd_peaks = np.concatenate(prd_peaks)
-    __, prd_peaks = cleanTapeOutput().getIntensitiesAndSpectralAngle(prd_peaks, prd_peaks, p_charges, input_ids)
+    __, prd_peaks = cleanTapeOutput().getIntensitiesAndSpectralAngle(prd_peaks, prd_peaks, p_charges, input_ids, start_stop_token=True)
     prd_peaks[prd_peaks < 0] = 0 ## Remove negative intensities
     theo_spectra = []
     prediction = prd_peaks[0]
