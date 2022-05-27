@@ -37,7 +37,9 @@ def TokenizePeptides(peptides, tokenizer = TAPETokenizer()):
     if isinstance(peptides, str):
         peptides = [peptides]
     input_ids = pad_sequences([tokenizer.encode(p[:30]) for p in peptides])
-    return input_ids, np.ones_like(input_ids)
+    mask = np.ones_like(input_ids)
+    mask[input_ids==0] = 0
+    return input_ids, mask
 
 
 def predictMsmsSpectrum(peptide, precursor_charge, precursor_mz, ce):
