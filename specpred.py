@@ -32,19 +32,13 @@ def get_precursor_charge_onehot(charges, considered_charges = range(1,7)):
         array[i, precursor_charge - 1] = 1
     return array
 
-
 def TokenizePeptides(peptides, tokenizer = TAPETokenizer()):
     if isinstance(peptides, str):
         peptides = [peptides]
     input_ids = pad_sequences([tokenizer.encode(p[:30]) for p in peptides])
-    print(   input_ids )
-    return input_ids, np.ones_like(input_ids)
-
-def predictSpectrum(peptide, charge, ce = 0.30):
-    p_charges = get_precursor_charge_onehot(charge)
-    p_ces = np.hstack([ce])
-    input_ids, input_mask = TokenizePeptides(peptide)
-    model = getPrositTransformerModel()
+    mask = np.ones_like(input_ids)
+    mask[input_ids==0] = 0
+    return input_ids, mask
 
 def predictSpectra(peptides, charges, ces = None, prediction_batch_size = 200):
     if not ces:
@@ -141,7 +135,7 @@ def readSpectra(mzml_file, scans):
             try:
                 ce = float(precursor['activation']['collision energy'])
             except KeyError:
-                ce=1.1  
+                ce=0.3 
             obs_spectra.append({
                 "intensity": match['intensity array'],
                 "mz" : match['m/z array'],
