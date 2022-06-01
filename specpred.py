@@ -19,6 +19,31 @@ mod_masses['C'] = 57.02146 ## Adjust for carbamidomethylated cysteines -static m
 
 pt_model_path = "./torch_model"
 
+
+ALPHABET = {
+    "A": 1,
+    "C": 2,
+    "D": 3,
+    "E": 4,
+    "F": 5,
+    "G": 6,
+    "H": 7,
+    "I": 8,
+    "K": 9,
+    "L": 10,
+    "M": 11,
+    "N": 12,
+    "P": 13,
+    "Q": 14,
+    "R": 15,
+    "S": 16,
+    "T": 17,
+    "V": 18,
+    "W": 19,
+    "Y": 20,
+    "M(ox)": 21,
+}
+
 def getPrositTransformerModel():
     model = ProteinBertForValuePredictionFragmentationProsit.from_pretrained(pt_model_path)
     model = model.to(torch.device('cuda:0'))
@@ -32,10 +57,13 @@ def get_precursor_charge_onehot(charges, considered_charges = range(1,7)):
         array[i, precursor_charge - 1] = 1
     return array
 
-def TokenizePeptides(peptides, tokenizer = TAPETokenizer()):
+def tokenizePeptide(peptide, dic = ALPHABET):
+    return [dic[aa] for aa in peptide]
+
+def tokenizePeptides(peptides):
     if isinstance(peptides, str):
         peptides = [peptides]
-    input_ids = pad_sequences([tokenizer.encode(p[:30]) for p in peptides])
+    input_ids = pad_sequences([tokenizePeptide(p) for p in peptides])
     mask = np.ones_like(input_ids)
     mask[input_ids==0] = 0
     return input_ids, mask
@@ -45,7 +73,7 @@ def predictSpectra(peptides, charges, ces = None, prediction_batch_size = 200):
         ces = [0.30]*len(peptides)
     p_charges = get_precursor_charge_onehot(charges)
     p_ces = np.hstack(ces)
-    input_ids, input_mask = TokenizePeptides(peptides)
+    input_ids, input_mask = tokenizePeptides(peptides)
     model = getPrositTransformerModel()
     prd_peaks = []
     prd_elapsed = 0
