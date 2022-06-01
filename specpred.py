@@ -58,7 +58,7 @@ def get_precursor_charge_onehot(charges, considered_charges = range(1,7)):
     return array
 
 def tokenizePeptide(peptide, dic = ALPHABET):
-    return [dic[aa] for aa in peptide]
+    return np.array([dic[aa] for aa in peptide])
 
 def tokenizePeptides(peptides):
     if isinstance(peptides, str):
