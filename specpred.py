@@ -20,30 +20,6 @@ mod_masses['C'] = 57.02146 ## Adjust for carbamidomethylated cysteines -static m
 pt_model_path = "./torch_model"
 
 
-ALPHABET = {
-    "A": 1,
-    "C": 2,
-    "D": 3,
-    "E": 4,
-    "F": 5,
-    "G": 6,
-    "H": 7,
-    "I": 8,
-    "K": 9,
-    "L": 10,
-    "M": 11,
-    "N": 12,
-    "P": 13,
-    "Q": 14,
-    "R": 15,
-    "S": 16,
-    "T": 17,
-    "V": 18,
-    "W": 19,
-    "Y": 20,
-    "M(ox)": 21,
-}
-
 def getPrositTransformerModel():
     model = ProteinBertForValuePredictionFragmentationProsit.from_pretrained(pt_model_path)
     model = model.to(torch.device('cuda:0'))
@@ -57,15 +33,14 @@ def get_precursor_charge_onehot(charges, considered_charges = range(1,7)):
         array[i, precursor_charge - 1] = 1
     return array
 
-def tokenizePeptide(peptide, dic = ALPHABET):
-    return [dic[aa] for aa in peptide]
-
-def tokenizePeptides(peptides):
+def tokenizePeptides(peptides, tokenizer = TAPETokenizer()):
     if isinstance(peptides, str):
         peptides = [peptides]
-    input_ids = pad_sequences([tokenizePeptide(p) for p in peptides])
+    input_ids =  pad_sequences([tokenizer.encode(p[:30]) for p in peptides])
     mask = np.ones_like(input_ids)
     mask[input_ids==0] = 0
+    #mask[input_ids==3] = 0
+    #mask = mask[:,1:-1]
     return input_ids, mask
 
 def predictSpectra(peptides, charges, ces = None, prediction_batch_size = 200):
@@ -88,10 +63,12 @@ def predictSpectra(peptides, charges, ces = None, prediction_batch_size = 200):
            'input_ids': torch.from_numpy(input_ids[prd_elapsed: (prd_elapsed+prediction_batch_size)].astype(np.int64)),
            'input_mask': torch.from_numpy(input_mask[prd_elapsed: (prd_elapsed+prediction_batch_size)].astype(np.int64))
                }
-
         targets_data = {name: tensor.cuda(device=torch.device('cuda:0'), non_blocking=True)
                                for name, tensor in targets_data.items()}
-        prd_peaks.append(model(**targets_data)[0].cpu().detach().numpy())
+        print(targets_data)
+        prediction = model(**targets_data)[0].cpu().detach().numpy()
+        prd_peaks.append(prediction)
+        # print(prediction)
         prd_elapsed += prediction_batch_size
         print("Elapsed predictions: {}".format(prd_elapsed))
 
@@ -99,6 +76,7 @@ def predictSpectra(peptides, charges, ces = None, prediction_batch_size = 200):
     __, prd_peaks = cleanTapeOutput().getIntensitiesAndSpectralAngle(prd_peaks, prd_peaks, p_charges, input_ids, start_stop_token=True)
     prd_peaks[prd_peaks < 0] = 0 ## Remove negative intensities
     ## Predict peaks end
+    print(prd_peaks)
 
     ## Create predicted spectrum
     theo_spectra = []
@@ -184,7 +162,7 @@ def rescoreSpectra(path, peptides, scans, tolerance=0.005):
     obs_matched_intensities = []
     for sought_mz, intens, mzs in zip(theo_mzs, obs_ints, obs_mzs):
         matched_spec=[]
-        print(np.max(intens))
+        # print(np.max(intens))
         for m in sought_mz:
             #print(m, mzs[(mzs >= m - tolerance) & (mzs <= m + tolerance)], intens[(mzs >= m - tolerance) & (mzs <= m + tolerance)])
             matched_spec.append(np.max(intens[(mzs >= m - tolerance) & (mzs <= m + tolerance)], initial=0.))
@@ -215,7 +193,8 @@ def rescorePout(pin_path, mzml_path, fdr = 0.05):
 
 if __name__ == "__main__":
 #    print (predictSpectra(["IAMAPEPTIDETHATISWERYSTRETCHEDANDTHATISAPARANTLYFANTASTICLYWEIRD"],[3],[0.3])) 
-    print (predictSpectra(["INIDHKFHRHL"],[3],[0.317])) 
+    predictSpectra(["INIDHKFHRHL"],[3],np.array([0.317]))
+#    print (predictSpectra(["INIDHKFHRHL"],[3],np.array([0.317])))
 #    print(rescorePout(
 #        "data/data_yeast_casanovo/percolator.target.peptides.txt",
 #        "data/data_yeast_casanovo/preproc.high.yeast.PXD003868.mzML"))
