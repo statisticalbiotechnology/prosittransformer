@@ -7,13 +7,8 @@ Everything that is required will be install except for Nvidia Apex. Install it h
 However, only training requires Nvidia Apex
 # Downloads: Data & Models
 ### Tape training data
-You can download the TAPE LMDB training data here:
-https://figshare.com/account/home#/projects/123637
-
+You can download the TAPE LMDB training data from this [link](https://doi.org/10.6084/m9.figshare.16688905).
 You can also convert Prosit HDF5-files to TAPE LMDB data by using this command:
-
-
-Then convert files to LMDB
 ```console
 prosit@transformer:~$ prosit2tape \
 --prosit_hdf5_path /path/to/file.hdf5 \
