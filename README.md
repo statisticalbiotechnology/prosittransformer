@@ -1,3 +1,4 @@
+![TAPE-model for predcting mass spectra](doc/method/img/bert.png "Prosit transformer")
 # Installation
 ```console
 prosit@transformer:~$ pip install -e .
@@ -27,8 +28,7 @@ https://figshare.com/articles/dataset/ProteomeTools_non_tryptic_-\_Prosit_fragme
 It's the hcd files that's being used.
 
 ### Models
-You can download the torch and tensorflow version of the prosit transformer here:
-https://figshare.com/account/home#/projects/123637
+You can download the [torch](https://doi.org/10.6084/m9.figshare.16691269) and [tensorflow](https://doi.org/10.6084/m9.figshare.16691341) version of the prosit transformer can be downloaded separately.
 
 # Training
 ## Warning: It's highly recommended to create a new environment and install tape at https://github.com/statisticalbiotechnology/tape and install Nvidia-apex. There will most likely be compatibility issues with Nvidia-apex and torch running "tape-train" in the same environment as prosittransformer.
