@@ -1,5 +1,5 @@
 import click
-from tape import ProteinBertForValuePredictionFragmentationProsit, ProteinBertForValuePredictionFragmentationPrositLstm, ProteinBertForValuePredictionFragmentationPrositRnnDecoder,ProteinBertForValuePredictionFragmentationPrositRnnEncoder
+from tape import ProteinBertForValuePredictionFragmentationProsit
 from tape.datasets import PrositFragmentationDataset
 import numpy as np
 import torch
@@ -27,9 +27,7 @@ def cli(model: Path, lmdb: Path, out_dir: Path, split: str, prosit_hdf5_path:Pat
     assert PathHandler.isFile(prosit_hdf5_path), f"{prosit_hdf5_path} don't exist!"
     assert split in splits, f"{split} not valid. Needs to be any of {splits}"
 
-    #pytorch_model = ProteinBertForValuePredictionFragmentationProsit.from_pretrained(model)
-    #pytorch_model = ProteinBertForValuePredictionFragmentationPrositRnnDecoder.from_pretrained(model)
-    pytorch_model = ProteinBertForValuePredictionFragmentationPrositRnnEncoder.from_pretrained(model)
+    pytorch_model = ProteinBertForValuePredictionFragmentationProsit.from_pretrained(model)
     if torch.cuda.is_available():
         use_gpu = True
         pytorch_model = pytorch_model.to(torch.device('cuda:0'))
