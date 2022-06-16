@@ -1,5 +1,6 @@
 import lmdb
-from tensorflow.keras.utils import HDF5Matrix
+import tensorflow_io as tfio
+#from tensorflow.keras.utils import HDF5Matrix
 import h5py
 import pickle as pkl
 import numpy as np
@@ -63,14 +64,18 @@ class LMDBDataset(Dataset):
 class hdf5Loader:
     """ Load hdf5 file """
     @staticmethod
-    def from_hdf5(path: str, n_samples:Union[int,None] = None)->HDF5Matrix:
+    def from_hdf5(path: str, n_samples:Union[int,None] = None)->dict:
         # Get a list of the keys for the datasets
+        if n_samples:
+            print("Warning, n_samples argument set.")
+            assert(False)
         with h5py.File(path, 'r') as f:
             dataset_list = list(f.keys())
         # Assemble into a dictionary
         data = dict()
         for dataset in dataset_list:
-            data[dataset] = HDF5Matrix(path, dataset, start=0, end=n_samples, normalizer=None)
+            data[dataset] = tfio.IODataset.from_hdf5(path, dataset)
+            # data[dataset] = HDF5Matrix(path, dataset, start=0, end=n_samples, normalizer=None)
         return data
 
     @staticmethod
@@ -267,7 +272,7 @@ class cleanTapeOutput:
 
 class PrepareTapeData(cleanTapeOutput, BatchLoader):
     """Prepate Tape HDF5-data by using Tape output and add meta-data from Prosit HDF5"""
-    def __init__(self, prosit_hdf5_data: HDF5Matrix, tape_result: dict)->None:
+    def __init__(self, prosit_hdf5_data: IODataset, tape_result: dict)->None:
         cleanTapeOutput.__init__(self)
         BatchLoader.__init__(self)
         
