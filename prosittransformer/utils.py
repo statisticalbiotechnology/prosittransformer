@@ -272,7 +272,7 @@ class cleanTapeOutput:
 
 class PrepareTapeData(cleanTapeOutput, BatchLoader):
     """Prepate Tape HDF5-data by using Tape output and add meta-data from Prosit HDF5"""
-    def __init__(self, prosit_hdf5_data: IODataset, tape_result: dict)->None:
+    def __init__(self, prosit_hdf5_data: tfio.IODataset, tape_result: dict)->None:
         cleanTapeOutput.__init__(self)
         BatchLoader.__init__(self)
         
