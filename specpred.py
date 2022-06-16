@@ -60,6 +60,7 @@ def predictSpectra(peptides, charges, ces = None, prediction_batch_size = 200):
         targets_data = { ## Load a batch of PSM CEs, charges, and peptide identifiers
            'collision_energy' : torch.FloatTensor(p_ces[prd_elapsed: (prd_elapsed+prediction_batch_size)].astype(np.float32)),
            'charge': torch.FloatTensor(p_charges[prd_elapsed: (prd_elapsed+prediction_batch_size)].astype(np.float32)),
+#           'charge': torch.FloatTensor(p_charges[prd_elapsed: (prd_elapsed+prediction_batch_size)].astype(np.int64)),
            'input_ids': torch.from_numpy(input_ids[prd_elapsed: (prd_elapsed+prediction_batch_size)].astype(np.int64)),
            'input_mask': torch.from_numpy(input_mask[prd_elapsed: (prd_elapsed+prediction_batch_size)].astype(np.int64))
                }
