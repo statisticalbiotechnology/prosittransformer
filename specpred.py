@@ -126,7 +126,8 @@ def readPout(path, fdr = 0.05):
     scans = [int(words[fields["scan"]]) for words in content]
     peptides = [words[fields["sequence"]] for words in content]
     charges = [int(words[fields["charge"]]) for words in content]     
-    return scans, peptides, charges       
+    qs = [int(words[qix]) for words in content]
+    return scans, peptides, charges, qs        
 
 def readSpectra(mzml_file, scans):
     obs_spectra = []
@@ -153,7 +154,7 @@ def readSpectra(mzml_file, scans):
             })
     return obs_spectra
 
-def rescoreSpectra(path, peptides, scans, tolerance=0.005):
+def rescoreSpectra(path, peptides, scans, qs, tolerance=0.005):
     obs_spectra = readSpectra(path, scans)
     obs_ints, obs_mzs = [ os["intensity"] for os in obs_spectra ], [ os["mz"] for os in obs_spectra ]
     charges, ces =  [ os["pcharge"] for os in obs_spectra ], [ os["CE"] for os in obs_spectra ]
@@ -170,8 +171,8 @@ def rescoreSpectra(path, peptides, scans, tolerance=0.005):
         obs_matched_intensities.append(np.array(matched_spec))
 
     scores = []
-    for theo, obs, peptide in zip(theo_intensities, obs_matched_intensities, peptides):
-        print(peptide)
+    for theo, obs, peptide, q in zip(theo_intensities, obs_matched_intensities, peptides, qs):
+        # print(peptide)
         # print(theo, obs)
         theo = theo/np.sqrt(np.dot(theo,theo))
         obs = obs/np.sqrt(np.dot(obs,obs))
@@ -183,13 +184,13 @@ def rescoreSpectra(path, peptides, scans, tolerance=0.005):
         diff = theo-obs
         mse = np.sqrt(np.dot(diff,diff))
         imse = 1. / (1. + mse)
-        print(cos_sim, ang_dist, cross_entropy, mse, imse) 
-        scores.append([cos_sim, ang_dist, cross_entropy, imse])
+        print(f"{peptide}\t{q}\t{cos_sim}\t{ang_dist}\t{cross_entropy}\t{mse}\t{imse}") 
+        scores.append([cos_sim, ang_dist, cross_entropy, mse, imse])
     return scores
 
 def rescorePout(pin_path, mzml_path, fdr = 0.05):
-    scans, peptides, charges = readPout(pin_path, fdr)
-    return rescoreSpectra(mzml_path, peptides, scans)
+    scans, peptides, charges, qs = readPout(pin_path, fdr)
+    return rescoreSpectra(mzml_path, peptides, scans, qs)
 
 
 if __name__ == "__main__":
