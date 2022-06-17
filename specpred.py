@@ -66,7 +66,7 @@ def predictSpectra(peptides, charges, ces = None, prediction_batch_size = 200):
                }
         targets_data = {name: tensor.cuda(device=torch.device('cuda:0'), non_blocking=True)
                                for name, tensor in targets_data.items()}
-        print(targets_data)
+        # print(targets_data)
         prediction = model(**targets_data)[0].cpu().detach().numpy()
         prd_peaks.append(prediction)
         # print(prediction)
