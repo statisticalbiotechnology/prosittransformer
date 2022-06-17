@@ -195,11 +195,11 @@ def rescorePout(pin_path, mzml_path, fdr = 0.05):
 
 if __name__ == "__main__":
 #    print (predictSpectra(["IAMAPEPTIDETHATISWERYSTRETCHEDANDTHATISAPARANTLYFANTASTICLYWEIRD"],[3],[0.3])) 
-    predictSpectra(["INIDHKFHRHL"],[3],np.array([0.317]))
+#    predictSpectra(["INIDHKFHRHL"],[3],np.array([0.317]))
 #    print (predictSpectra(["INIDHKFHRHL"],[3],np.array([0.317])))
 #    print(rescorePout(
 #        "data/data_yeast_casanovo/percolator.target.peptides.txt",
 #        "data/data_yeast_casanovo/preproc.high.yeast.PXD003868.mzML"))
-#    rescorePout(
-#        "data/data_yeast_casanovo/percolator.target.peptides.txt",
-#        "data/data_yeast_casanovo/preproc.high.yeast.PXD003868.mzML")
+    rescorePout(
+        "data/data_yeast_casanovo/percolator.target.peptides.txt",
+        "data/data_yeast_casanovo/preproc.high.yeast.PXD003868.mzML")
