@@ -126,7 +126,7 @@ def readPout(path, fdr = 0.05):
     scans = [int(words[fields["scan"]]) for words in content]
     peptides = [words[fields["sequence"]] for words in content]
     charges = [int(words[fields["charge"]]) for words in content]     
-    qs = [int(words[qix]) for words in content]
+    qs = [float(words[qix]) for words in content]
     return scans, peptides, charges, qs        
 
 def readSpectra(mzml_file, scans):
