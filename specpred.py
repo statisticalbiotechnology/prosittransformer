@@ -77,7 +77,7 @@ def predictSpectra(peptides, charges, ces = None, prediction_batch_size = 200):
     __, prd_peaks = cleanTapeOutput().getIntensitiesAndSpectralAngle(prd_peaks, prd_peaks, p_charges, input_ids, start_stop_token=True)
     prd_peaks[prd_peaks < 0] = 0 ## Remove negative intensities
     ## Predict peaks end
-    print(prd_peaks)
+    # print(prd_peaks)
 
     ## Create predicted spectrum
     theo_spectra = []
