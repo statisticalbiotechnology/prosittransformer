@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name="prosittransformer",
     version="1.0",
-    packages= (),
+    packages= ["prosittransformer"],
     install_requires=[
         #'Click',
         #'tensorflow-gpu==2.3.0',
@@ -11,7 +11,7 @@ setup(
         #'tqdm==4.62.3',
         #'onnx==1.9.0',
         #'onnx-tf==1.8.0',
-        #'scikit-learn',
+        'scikit-learn',
         'ipdb',
         'scipy',
         'tape_proteins @ https://github.com/statisticalbiotechnology/tape/tarball/master'
